@@ -248,3 +248,15 @@ async function createLobby(){
     );
 
 }
+
+function copyLobbyCode(){
+
+    navigator.clipboard.writeText(
+        roomCode
+    );
+
+    alert(
+        "Lobby code copied!"
+    );
+
+}
