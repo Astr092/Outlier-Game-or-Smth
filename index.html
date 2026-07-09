@@ -10,11 +10,23 @@
 <div class="container">
     <h1>Outlier</h1>
 
-    <div id="join">
-        <input id="name" placeholder="Your name">
-        <input id="room" placeholder="Lobby code">
-        <button onclick="joinGame()">Join Game</button>
-    </div>
+<div id="join">
+
+    <input id="name" placeholder="Your name">
+
+    <button onclick="createLobby()">
+        Create Lobby
+    </button>
+
+    <hr>
+
+    <input id="room" placeholder="Enter lobby code">
+
+    <button onclick="joinGame()">
+        Join Lobby
+    </button>
+
+</div>
 
     <div id="game" hidden>
         <h2>Lobby: <span id="roomDisplay"></span></h2>
@@ -39,9 +51,3 @@
 <button onclick="copyLink()">
 Copy Game Link
 </button>
-
-<div id="join">
-    <input id="name" placeholder="Your name">
-    <input id="room" placeholder="Lobby code">
-    <button onclick="joinGame()">Join Game</button>
-</div>
