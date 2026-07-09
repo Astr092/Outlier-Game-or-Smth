@@ -1,3 +1,5 @@
+let isHost = false;
+
 import { firebaseConfig } from "./firebase.js";
 
 import {
@@ -203,5 +205,26 @@ function copyLink(){
     );
 
     alert("Game link copied!");
+
+}
+
+function generateRoomCode(){
+
+    const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    let code = "";
+
+    for(let i = 0; i < 5; i++){
+
+        code += characters[
+            Math.floor(
+                Math.random() * characters.length
+            )
+        ];
+
+    }
+
+    return code;
 
 }
