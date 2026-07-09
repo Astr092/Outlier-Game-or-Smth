@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Outlier Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Outlier</h1>
+
+    <div id="join">
+        <input id="name" placeholder="Your name">
+        <input id="room" placeholder="Lobby code">
+        <button onclick="joinGame()">Join Game</button>
+    </div>
+
+    <div id="game" hidden>
+        <h2>Lobby: <span id="roomDisplay"></span></h2>
+
+        <h3>Players:</h3>
+        <ul id="players"></ul>
+
+        <button onclick="startGame()">Start Game</button>
+
+        <button onclick="revealRole()">Reveal My Role</button>
+
+        <h2 id="result"></h2>
+    </div>
+
+</div>
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
