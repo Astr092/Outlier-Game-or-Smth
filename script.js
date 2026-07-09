@@ -128,6 +128,9 @@ async function startGame(){
         )
     );
 
+let roomCode;
+let playerName;
+let isHost = false;
 
     let ids=[];
 
