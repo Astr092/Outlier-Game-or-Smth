@@ -228,3 +228,23 @@ function generateRoomCode(){
     return code;
 
 }
+
+async function createLobby(){
+
+    roomCode = generateRoomCode();
+
+    isHost = true;
+
+    document.getElementById("room").value =
+    roomCode;
+
+
+    await joinGame();
+
+
+    alert(
+        "Lobby created!\n\nYour lobby code is: "
+        + roomCode
+    );
+
+}
