@@ -232,7 +232,7 @@ function generateRoomCode(){
 
 }
 
-async function createLobby(){
+async function createLobby(){}
 
     roomCode = generateRoomCode();
 
