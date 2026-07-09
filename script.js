@@ -195,3 +195,13 @@ async function revealRole(){
     "You are NOT the outlier.";
 
 }
+
+function copyLink(){
+
+    navigator.clipboard.writeText(
+        window.location.href
+    );
+
+    alert("Game link copied!");
+
+}
