@@ -1,215 +1,148 @@
-let isHost = false;
+// ==========================
+// Firebase Imports
+// ==========================
 
-import { firebaseConfig } from "./firebase.js";
-
-import {
-initializeApp
-} from 
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { db, auth } from "./firebase.js";
 
 import {
-getFirestore,
-doc,
-setDoc,
-getDoc,
-collection,
-getDocs,
-updateDoc
-}
-from
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    signInAnonymously,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 
-const app = initializeApp(firebaseConfig);
+// ==========================
+// Firestore Imports
+// ==========================
 
-const db = getFirestore(app);
+import {
 
+    doc,
+    setDoc,
+    getDoc
 
-let playerID =
-localStorage.getItem("playerID");
-
-if(!playerID){
-    playerID =
-    crypto.randomUUID();
-
-    localStorage.setItem(
-        "playerID",
-        playerID
-    );
-}
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 
-let roomCode;
-let playerName;
+// ==========================
+// Global Variables
+// ==========================
 
+let currentUser = null;
 
-async function joinGame(){
+let currentRoom = null;
 
-    playerName =
-    document.getElementById("name").value;
+let playerName = null;
 
-    roomCode =
-    document.getElementById("room").value;
-
-
-    await setDoc(
-        doc(
-            db,
-            "rooms",
-            roomCode,
-            "players",
-            playerID
-        ),
-        {
-            name: playerName,
-            role:null
-        }
-    );
-
-
-    document.getElementById("join").hidden=true;
-    document.getElementById("game").hidden=false;
-
-    document.getElementById(
-        "roomDisplay"
-    ).innerText=roomCode;
-
-
-    loadPlayers();
-
-}
-
-
-
-async function loadPlayers(){
-
-    let list =
-    document.getElementById("players");
-
-    list.innerHTML="";
-
-
-    let snapshot =
-    await getDocs(
-        collection(
-            db,
-            "rooms",
-            roomCode,
-            "players"
-        )
-    );
-
-
-    snapshot.forEach(p=>{
-
-        let li =
-        document.createElement("li");
-
-        li.innerText =
-        p.data().name;
-
-        list.appendChild(li);
-
-    });
-
-}
-
-
-
-async function startGame(){
-
-    let players =
-    await getDocs(
-        collection(
-            db,
-            "rooms",
-            roomCode,
-            "players"
-        )
-    );
-
-let roomCode;
-let playerName;
 let isHost = false;
 
-    let ids=[];
 
-    players.forEach(
-        p=>ids.push(p.id)
-    );
+// ==========================
+// HTML Elements
+// ==========================
 
+const nameInput =
+document.getElementById("nameInput");
 
-    let chosen =
-    ids[
-        Math.floor(
-            Math.random()*ids.length
-        )
-    ];
+const roomInput =
+document.getElementById("roomInput");
 
 
-    for(let id of ids){
+const createLobbyBtn =
+document.getElementById("createLobbyBtn");
 
-        await updateDoc(
-            doc(
-                db,
-                "rooms",
-                roomCode,
-                "players",
-                id
-            ),
-            {
-                role:
-                id===chosen
-                ?
-                "outlier"
-                :
-                "normal"
-            }
+
+const joinLobbyBtn =
+document.getElementById("joinLobbyBtn");
+
+
+const copyCodeBtn =
+document.getElementById("copyCodeBtn");
+
+
+const startGameBtn =
+document.getElementById("startGameBtn");
+
+
+const leaveLobbyBtn =
+document.getElementById("leaveLobbyBtn");
+
+
+const revealRoleBtn =
+document.getElementById("revealRoleBtn");
+
+
+// Screens
+
+const homeScreen =
+document.getElementById("homeScreen");
+
+const lobbyScreen =
+document.getElementById("lobbyScreen");
+
+const gameScreen =
+document.getElementById("gameScreen");
+
+
+// Text Displays
+
+const roomCodeDisplay =
+document.getElementById("roomCodeDisplay");
+
+const statusText =
+document.getElementById("statusText");
+
+
+// ==========================
+// Authentication
+// ==========================
+
+async function loginPlayer(){
+
+    try{
+
+        await signInAnonymously(auth);
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Authentication failed:",
+            error
         );
 
     }
 
-
-    alert("Game started!");
-
 }
 
 
+onAuthStateChanged(
+    auth,
+    (user)=>{
 
-async function revealRole(){
+        if(user){
 
-    let player =
-    await getDoc(
-        doc(
-            db,
-            "rooms",
-            roomCode,
-            "players",
-            playerID
-        )
-    );
+            currentUser = user;
+
+            console.log(
+                "Player ID:",
+                user.uid
+            );
+
+        }
+
+    }
+);
 
 
-    document.getElementById(
-        "result"
-    ).innerText =
-    player.data().role==="outlier"
-    ?
-    "You are the OUTLIER!"
-    :
-    "You are NOT the outlier.";
+// Start authentication
 
-}
+loginPlayer();
 
-function copyLink(){
 
-    navigator.clipboard.writeText(
-        window.location.href
-    );
-
-    alert("Game link copied!");
-
-}
+// ==========================
+// Utility Functions
+// ==========================
 
 function generateRoomCode(){
 
@@ -218,53 +151,201 @@ function generateRoomCode(){
 
     let code = "";
 
+
     for(let i = 0; i < 5; i++){
 
         code += characters[
             Math.floor(
-                Math.random() * characters.length
+                Math.random()
+                *
+                characters.length
             )
         ];
 
     }
 
+
     return code;
 
 }
 
+
+// ==========================
+// Lobby Functions
+// ==========================
+
 async function createLobby(){
 
-    roomCode = generateRoomCode();
+    console.log(
+        "Creating lobby..."
+    );
+
+
+    playerName =
+    nameInput.value.trim();
+
+
+    if(!playerName){
+
+        alert(
+            "Please enter your name."
+        );
+
+        return;
+
+    }
+
+
+    currentRoom =
+    generateRoomCode();
+
 
     isHost = true;
 
-    document.getElementById("room").value = roomCode;
 
-    await joinGame();
-
-    alert(
-        "Lobby created!\n\nYour lobby code is: "
-        + roomCode
+    console.log(
+        "Lobby:",
+        currentRoom
     );
+
+
+    roomCodeDisplay.innerText =
+    currentRoom;
+
+
+    homeScreen.classList.add(
+        "hidden"
+    );
+
+
+    lobbyScreen.classList.remove(
+        "hidden"
+    );
+
+
+    statusText.innerText =
+    "Lobby created. Waiting for players...";
 
 }
 
-}
 
-function copyLobbyCode(){
 
-    navigator.clipboard.writeText(
-        roomCode
+async function joinLobby(){
+
+    console.log(
+        "Joining lobby..."
     );
 
-    alert(
-        "Lobby code copied!"
+
+    playerName =
+    nameInput.value.trim();
+
+
+    currentRoom =
+    roomInput.value
+    .trim()
+    .toUpperCase();
+
+
+    if(!playerName || !currentRoom){
+
+        alert(
+            "Enter your name and lobby code."
+        );
+
+        return;
+
+    }
+
+
+    console.log(
+        "Joining:",
+        currentRoom
     );
+
+
+    roomCodeDisplay.innerText =
+    currentRoom;
+
+
+    homeScreen.classList.add(
+        "hidden"
+    );
+
+
+    lobbyScreen.classList.remove(
+        "hidden"
+    );
+
 
 }
 
-window.createLobby = createLobby;
-window.joinGame = joinGame;
-window.startGame = startGame;
-window.revealRole = revealRole;
-window.copyLobbyCode = copyLobbyCode;
+
+// ==========================
+// Button Connections
+// ==========================
+
+createLobbyBtn.addEventListener(
+    "click",
+    createLobby
+);
+
+
+joinLobbyBtn.addEventListener(
+    "click",
+    joinLobby
+);
+
+
+copyCodeBtn.addEventListener(
+    "click",
+    ()=>{
+
+        navigator.clipboard.writeText(
+            currentRoom
+        );
+
+        alert(
+            "Lobby code copied!"
+        );
+
+    }
+);
+
+
+// ==========================
+// Temporary Placeholders
+// ==========================
+
+startGameBtn.addEventListener(
+    "click",
+    ()=>{
+
+        console.log(
+            "Start game clicked"
+        );
+
+    }
+);
+
+
+leaveLobbyBtn.addEventListener(
+    "click",
+    ()=>{
+
+        location.reload();
+
+    }
+);
+
+
+revealRoleBtn.addEventListener(
+    "click",
+    ()=>{
+
+        console.log(
+            "Reveal role clicked"
+        );
+
+    }
+);
