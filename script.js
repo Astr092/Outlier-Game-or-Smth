@@ -330,6 +330,8 @@ async function joinLobby(){
 
 function openLobby(){
 
+    
+
     roomCodeDisplay.innerText =
     currentRoom;
 
@@ -348,7 +350,26 @@ function openLobby(){
     "Waiting for players...";
 
 
-    listenForPlayers();
+   listenForPlayers();
+
+    listenForGameStart();
+
+
+    if(isHost){
+
+        startGameBtn.classList.remove(
+            "hidden"
+        );
+
+    }
+
+    else{
+
+        startGameBtn.classList.add(
+            "hidden"
+        );
+
+    }
 
 }
 
@@ -357,6 +378,8 @@ function openLobby(){
 // ==========================
 
 function listenForPlayers(){
+
+    listenForGameStart();
 
     const playersRef =
     collection(
