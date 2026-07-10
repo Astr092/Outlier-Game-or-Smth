@@ -1,60 +1,168 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Outlier Game</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Outlier</title>
+
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
-<div class="container">
-    <h1>Outlier</h1>
+    <main class="container">
 
-<div id="join">
+        <h1>OUTLIER</h1>
+        <p class="subtitle">
+            One player is different.<br>
+            Can you figure out who?
+        </p>
 
-    <input id="name" placeholder="Your name">
+        <!-- ==========================
+             HOME SCREEN
+        =========================== -->
 
-    <button onclick="createLobby()">
-        Create Lobby
-    </button>
+        <section id="homeScreen">
 
-    <hr>
+            <input
+                type="text"
+                id="nameInput"
+                placeholder="Enter your name"
+                maxlength="20"
+            >
 
-    <input id="room" placeholder="Enter lobby code">
+            <button id="createLobbyBtn">
+                Create Lobby
+            </button>
 
-    <button onclick="joinGame()">
-        Join Lobby
-    </button>
+            <div class="divider">
+                <span>OR</span>
+            </div>
 
-</div>
+            <input
+                type="text"
+                id="roomInput"
+                placeholder="Lobby Code"
+                maxlength="5"
+            >
 
-    <div id="game" hidden>
-<h2>
-Lobby:
-<span id="roomDisplay"></span>
-</h2>
+            <button id="joinLobbyBtn">
+                Join Lobby
+            </button>
 
-<button onclick="copyLobbyCode()">
-Copy Lobby Code
-</button>
+        </section>
 
-        <h3>Players:</h3>
-        <ul id="players"></ul>
+        <!-- ==========================
+             LOBBY
+        =========================== -->
 
-        <button onclick="startGame()">Start Game</button>
+        <section id="lobbyScreen" class="hidden">
 
-        <button onclick="revealRole()">Reveal My Role</button>
+            <h2>
+                Lobby
+            </h2>
 
-        <h2 id="result"></h2>
-    </div>
-    
+            <div class="lobbyCode">
+
+                <span id="roomCodeDisplay">
+                    -----
+                </span>
+
+                <button id="copyCodeBtn">
+                    Copy Code
+                </button>
+
+            </div>
+
+            <p id="hostLabel"></p>
+
+            <h3>
+                Players
+            </h3>
+
+            <ul id="playerList">
+
+            </ul>
+
+            <p id="playerCount">
+                0 Players
+            </p>
+
+            <button
+                id="startGameBtn"
+                class="hidden">
+                Start Game
+            </button>
+
+            <button
+                id="leaveLobbyBtn">
+                Leave Lobby
+            </button>
+
+            <p id="statusText">
+                Waiting for players...
+            </p>
+
+        </section>
+
+        <!-- ==========================
+             GAME SCREEN
+        =========================== -->
+
+        <section id="gameScreen" class="hidden">
+
+            <h2>
+                Game Started
+            </h2>
+
+            <button id="revealRoleBtn">
+
+                Reveal My Role
+
+            </button>
+
+            <div
+                id="roleCard"
+                class="hidden">
+
+                <h2 id="roleTitle"></h2>
+
+                <p id="roleDescription"></p>
+
+            </div>
+
+            <button
+                id="playAgainBtn"
+                class="hidden">
+
+                Play Again
+
+            </button>
+
+        </section>
+
+        <!-- ==========================
+             FOOTER
+        =========================== -->
+
+        <footer>
+
+            <small>
+
+                Outlier
+
+            </small>
+
+        </footer>
+
+    </main>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+
 </html>
-<button onclick="copyLink()">
-Copy Game Link
-</button>
-
-    </div>
-
-<script type="module" src="script.js"></script>
-    
-    </body>
