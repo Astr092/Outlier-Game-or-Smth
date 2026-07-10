@@ -1,3 +1,5 @@
+console.log("NEW SCRIPT VERSION LOADED");
+
 // ==========================
 // Firebase Imports
 // ==========================
