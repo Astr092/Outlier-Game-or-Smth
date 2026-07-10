@@ -65,6 +65,8 @@ onAuthStateChanged(
 
             currentUser = user;
 
+            authReady = true;
+
             console.log(
                 "Player ID:",
                 user.uid
@@ -156,17 +158,13 @@ async function addPlayerToLobby(){
 // Lobby Functions
 // ==========================
 
-async function createLobby(){
+while(!authReady){
 
-    if(!currentUser){
+    await new Promise(
+        resolve => setTimeout(resolve,100)
+    );
 
-        alert(
-            "Connecting to server. Try again."
-        );
-
-        return;
-
-    }
+}
 
 
     playerName =
@@ -214,8 +212,6 @@ async function createLobby(){
 
 
     openLobby();
-
-}
 
 
 
