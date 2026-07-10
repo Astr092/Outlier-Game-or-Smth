@@ -27,6 +27,7 @@ let currentUser = null;
 let currentRoom = null;
 let playerName = null;
 let isHost = false;
+let authReady = false;
 
 
 // ==========================
