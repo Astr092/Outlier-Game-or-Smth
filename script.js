@@ -182,11 +182,12 @@ while(!authReady){
     );
 
 
-    await addPlayerToLobby();
+       await addPlayerToLobby();
 
 
     openLobby();
 
+}
 
 
 async function joinLobby(){
