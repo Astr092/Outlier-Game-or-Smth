@@ -263,3 +263,9 @@ function copyLobbyCode(){
     );
 
 }
+
+window.createLobby = createLobby;
+window.joinGame = joinGame;
+window.startGame = startGame;
+window.revealRole = revealRole;
+window.copyLobbyCode = copyLobbyCode;
