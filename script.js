@@ -58,6 +58,34 @@ function generateRoomCode(){
 }
 
 // ==========================
+// Player Functions
+// ==========================
+
+async function addPlayerToLobby(){
+
+    await setDoc(
+
+        doc(
+            db,
+            "rooms",
+            currentRoom,
+            "players",
+            currentUser.uid
+        ),
+
+        {
+
+            name: playerName,
+
+            uid: currentUser.uid
+
+        }
+
+    );
+
+}
+
+// ==========================
 // HTML Elements
 // ==========================
 
