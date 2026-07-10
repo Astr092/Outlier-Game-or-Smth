@@ -311,8 +311,6 @@ async function createLobby(){
     statusText.innerText =
     "Lobby created. Waiting for players...";
 
-}
-
 
 
 async function joinLobby(){
@@ -392,9 +390,6 @@ async function joinLobby(){
     lobbyScreen.classList.remove(
         "hidden"
     );
-
-
-}
 
 // ==========================
 // Player List Listener
