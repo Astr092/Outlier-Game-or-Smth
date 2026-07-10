@@ -15,7 +15,8 @@ import {
     setDoc,
     getDoc,
     collection,
-    onSnapshot
+    onSnapshot,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 
@@ -546,45 +547,130 @@ async function startGame(){
     }
 
 
+    try{
 
- try{
 
-    await setDoc(
+        const playersSnapshot =
+        await getDocs(
 
-        doc(
+            collection(
+                db,
+                "rooms",
+                currentRoom,
+                "players"
+            )
 
-            db,
+        );
 
-            "rooms",
 
-            currentRoom
+        const players = [];
 
-        ),
 
-        {
+        playersSnapshot.forEach(
 
-            gameStarted:true
+            (player)=>{
 
-        },
+                players.push(
+                    player.id
+                );
 
-        {
+            }
 
-            merge:true
+        );
+
+
+        if(players.length < 3){
+
+            alert(
+                "You need at least 3 players."
+            );
+
+            return;
 
         }
 
-    );
 
-}
+        const outlierIndex =
+        Math.floor(
+            Math.random() *
+            players.length
+        );
 
-catch(error){
 
-    console.error(
-        "Starting game failed:",
-        error
-    );
+        const outlier =
+        players[outlierIndex];
 
-}
+
+
+        for(const playerID of players){
+
+
+            await setDoc(
+
+                doc(
+                    db,
+                    "rooms",
+                    currentRoom,
+                    "players",
+                    playerID
+                ),
+
+                {
+
+                    role:
+                    playerID === outlier
+                    ? "outlier"
+                    : "player"
+
+                },
+
+                {
+
+                    merge:true
+
+                }
+
+            );
+
+
+        }
+
+
+
+        await setDoc(
+
+            doc(
+                db,
+                "rooms",
+                currentRoom
+            ),
+
+            {
+
+                gameStarted:true
+
+            },
+
+            {
+
+                merge:true
+
+            }
+
+        );
+
+
+    }
+
+
+    catch(error){
+
+        console.error(
+            "Starting game failed:",
+            error
+        );
+
+    }
 
 }
 
@@ -619,7 +705,25 @@ if(revealRoleBtn){
 
         "click",
 
-        ()=>{
+        async ()=>{
+
+
+            const playerDoc =
+            await getDoc(
+
+                doc(
+                    db,
+                    "rooms",
+                    currentRoom,
+                    "players",
+                    currentUser.uid
+                )
+
+            );
+
+
+            const data =
+            playerDoc.data();
 
 
             roleCard.classList.remove(
@@ -627,12 +731,30 @@ if(revealRoleBtn){
             );
 
 
-            roleTitle.innerText =
-            "Role Assigned";
+            if(data.role === "outlier"){
 
 
-            roleDescription.innerText =
-            "Role assignment will be added next.";
+                roleTitle.innerText =
+                "You are the Outlier";
+
+
+                roleDescription.innerText =
+                "Your role is different from everyone else's.";
+
+
+            }
+
+            else{
+
+
+                roleTitle.innerText =
+                "You are a Player";
+
+
+                roleDescription.innerText =
+                "Find the outlier among the group (innocent).";
+
+            }
 
 
         }
@@ -640,7 +762,6 @@ if(revealRoleBtn){
     );
 
 }
-
 
 
 // ==========================
