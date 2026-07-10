@@ -18,7 +18,10 @@ import {
 
     doc,
     setDoc,
-    getDoc
+    getDoc,
+    collection,
+    onSnapshot,
+    getDocs
 
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
@@ -151,6 +154,34 @@ function generateRoomCode(){
 
     let code = "";
 
+// ==========================
+// Add Player To Lobby
+// ==========================
+
+async function addPlayerToLobby(){
+
+    await setDoc(
+
+        doc(
+            db,
+            "rooms",
+            currentRoom,
+            "players",
+            currentUser.uid
+        ),
+
+        {
+
+            name: playerName,
+
+            uid: currentUser.uid
+
+        }
+
+    );
+
+}
+
 
     for(let i = 0; i < 5; i++){
 
@@ -174,6 +205,26 @@ function generateRoomCode(){
 // Lobby Functions
 // ==========================
 
+function openLobby(){
+
+    roomCodeDisplay.innerText =
+    currentRoom;
+
+
+    homeScreen.classList.add(
+        "hidden"
+    );
+
+
+    lobbyScreen.classList.remove(
+        "hidden"
+    );
+
+
+    listenForPlayers();
+
+}
+
 async function createLobby(){
 
     console.log(
@@ -195,6 +246,40 @@ async function createLobby(){
 
     }
 
+
+    currentRoom =
+    generateRoomCode();
+
+
+    isHost = true;
+
+
+    await setDoc(
+
+        doc(
+            db,
+            "rooms",
+            currentRoom
+        ),
+
+        {
+
+            host:
+            currentUser.uid,
+
+            gameStarted:false
+
+        }
+
+    );
+
+
+    await addPlayerToLobby();
+
+
+    openLobby();
+
+}
 
     currentRoom =
     generateRoomCode();
@@ -258,6 +343,37 @@ async function joinLobby(){
     }
 
 
+    const room =
+    await getDoc(
+
+        doc(
+            db,
+            "rooms",
+            currentRoom
+        )
+
+    );
+
+
+    if(!room.exists()){
+
+        alert(
+            "Lobby does not exist."
+        );
+
+        return;
+
+    }
+
+
+    await addPlayerToLobby();
+
+
+    openLobby();
+
+}
+
+
     console.log(
         "Joining:",
         currentRoom
@@ -280,6 +396,68 @@ async function joinLobby(){
 
 }
 
+// ==========================
+// Player List Listener
+// ==========================
+
+function listenForPlayers(){
+
+    const playersRef =
+    collection(
+        db,
+        "rooms",
+        currentRoom,
+        "players"
+    );
+
+
+    onSnapshot(
+
+        playersRef,
+
+        (snapshot)=>{
+
+
+            const list =
+            document.getElementById(
+                "playerList"
+            );
+
+
+            list.innerHTML="";
+
+
+            snapshot.forEach(
+                (player)=>{
+
+
+                    const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                    li.innerText =
+                    player.data().name;
+
+
+                    list.appendChild(li);
+
+
+                }
+            );
+
+
+            document.getElementById(
+                "playerCount"
+            ).innerText =
+            `${snapshot.size} Players`;
+
+        }
+
+    );
+
+}
 
 // ==========================
 // Button Connections
