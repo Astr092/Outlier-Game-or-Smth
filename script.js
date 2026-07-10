@@ -29,6 +29,33 @@ let playerName = null;
 let isHost = false;
 let authReady = false;
 
+// ==========================
+// Utility Functions
+// ==========================
+
+function generateRoomCode(){
+
+    const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    let code = "";
+
+
+    for(let i = 0; i < 5; i++){
+
+        code += characters[
+            Math.floor(
+                Math.random() *
+                characters.length
+            )
+        ];
+
+    }
+
+
+    return code;
+
+}
 
 // ==========================
 // HTML Elements
