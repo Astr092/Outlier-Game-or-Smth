@@ -19,18 +19,79 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 
-console.log("NEW SCRIPT VERSION LOADED");
+// ==========================
+// Debug
+// ==========================
+
+console.log("OUTLIER SCRIPT LOADED");
+
 
 // ==========================
 // Global Variables
 // ==========================
 
 let currentUser = null;
+
 let currentRoom = null;
+
 let playerName = null;
+
 let isHost = false;
+
 let authReady = false;
-let gameStarted = false;
+
+
+// ==========================
+// HTML Elements
+// ==========================
+
+const nameInput =
+document.getElementById("nameInput");
+
+const roomInput =
+document.getElementById("roomInput");
+
+
+const createLobbyBtn =
+document.getElementById("createLobbyBtn");
+
+const joinLobbyBtn =
+document.getElementById("joinLobbyBtn");
+
+
+const copyCodeBtn =
+document.getElementById("copyCodeBtn");
+
+const startGameBtn =
+document.getElementById("startGameBtn");
+
+const leaveLobbyBtn =
+document.getElementById("leaveLobbyBtn");
+
+
+const homeScreen =
+document.getElementById("homeScreen");
+
+const lobbyScreen =
+document.getElementById("lobbyScreen");
+
+const gameScreen =
+document.getElementById("gameScreen");
+
+
+const roomCodeDisplay =
+document.getElementById("roomCodeDisplay");
+
+const statusText =
+document.getElementById("statusText");
+
+
+const playerList =
+document.getElementById("playerList");
+
+const playerCount =
+document.getElementById("playerCount");
+
 
 // ==========================
 // Utility Functions
@@ -43,6 +104,7 @@ function generateRoomCode(){
 
     let code = "";
 
+
     for(let i = 0; i < 5; i++){
 
         code += characters[
@@ -54,9 +116,65 @@ function generateRoomCode(){
 
     }
 
+
     return code;
 
 }
+
+
+// ==========================
+// Authentication
+// ==========================
+
+onAuthStateChanged(
+
+    auth,
+
+    (user)=>{
+
+        if(user){
+
+            currentUser = user;
+
+            authReady = true;
+
+
+            console.log(
+                "Authentication ready:",
+                user.uid
+            );
+
+        }
+
+    }
+
+);
+
+
+
+async function loginPlayer(){
+
+    try{
+
+        await signInAnonymously(auth);
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Authentication failed:",
+            error
+        );
+
+    }
+
+}
+
+
+loginPlayer();
+
+
 
 // ==========================
 // Player Functions
@@ -86,104 +204,6 @@ async function addPlayerToLobby(){
 
 }
 
-console.log("addPlayerToLobby loaded");
-
-// ==========================
-// HTML Elements
-// ==========================
-
-const nameInput = document.getElementById("nameInput");
-const roomInput = document.getElementById("roomInput");
-
-const createLobbyBtn = document.getElementById("createLobbyBtn");
-const joinLobbyBtn = document.getElementById("joinLobbyBtn");
-
-const copyCodeBtn = document.getElementById("copyCodeBtn");
-const leaveLobbyBtn = document.getElementById("leaveLobbyBtn");
-
-const homeScreen = document.getElementById("homeScreen");
-const lobbyScreen = document.getElementById("lobbyScreen");
-
-const roomCodeDisplay =
-document.getElementById("roomCodeDisplay");
-
-const statusText =
-document.getElementById("statusText");
-
-
-// ==========================
-// Authentication Debug
-// ==========================
-
-onAuthStateChanged(
-    auth,
-    (user)=>{
-
-        console.log(
-            "Auth state changed:",
-            user
-        );
-
-
-        if(user){
-
-            currentUser = user;
-
-            authReady = true;
-
-            console.log(
-                "Authentication successful:",
-                user.uid
-            );
-
-        }
-
-        else{
-
-            console.log(
-                "No user signed in yet"
-            );
-
-        }
-
-    }
-);
-
-
-async function loginPlayer(){
-
-    console.log(
-        "Attempting anonymous login..."
-    );
-
-
-    try{
-
-        const result =
-        await signInAnonymously(auth);
-
-
-        console.log(
-            "Login complete:",
-            result.user.uid
-        );
-
-    }
-
-
-    catch(error){
-
-        console.error(
-            "LOGIN ERROR:",
-            error
-        );
-
-    }
-
-}
-
-
-loginPlayer();
 
 
 // ==========================
@@ -195,7 +215,10 @@ async function createLobby(){
     while(!authReady){
 
         await new Promise(
-            resolve => setTimeout(resolve,100)
+
+            resolve =>
+            setTimeout(resolve,100)
+
         );
 
     }
@@ -235,7 +258,8 @@ async function createLobby(){
 
             {
 
-                host: currentUser.uid,
+                host:
+                currentUser.uid,
 
                 gameStarted:false
 
@@ -249,12 +273,13 @@ async function createLobby(){
 
         openLobby();
 
+
     }
 
     catch(error){
 
         console.error(
-            "Creating lobby failed:",
+            "Create lobby failed:",
             error
         );
 
@@ -262,14 +287,15 @@ async function createLobby(){
 
 }
 
-
-
 async function joinLobby(){
 
     while(!authReady){
 
         await new Promise(
-            resolve => setTimeout(resolve,100)
+
+            resolve =>
+            setTimeout(resolve,100)
+
         );
 
     }
@@ -285,6 +311,7 @@ async function joinLobby(){
     .toUpperCase();
 
 
+
     if(!playerName || !currentRoom){
 
         alert(
@@ -296,7 +323,8 @@ async function joinLobby(){
     }
 
 
-    const room =
+
+    const roomSnapshot =
     await getDoc(
 
         doc(
@@ -308,7 +336,8 @@ async function joinLobby(){
     );
 
 
-    if(!room.exists()){
+
+    if(!roomSnapshot.exists()){
 
         alert(
             "Lobby not found."
@@ -319,6 +348,7 @@ async function joinLobby(){
     }
 
 
+
     await addPlayerToLobby();
 
 
@@ -326,11 +356,11 @@ async function joinLobby(){
 
 }
 
-
+// ==========================
+// Lobby Display
+// ==========================
 
 function openLobby(){
-
-    
 
     roomCodeDisplay.innerText =
     currentRoom;
@@ -350,11 +380,6 @@ function openLobby(){
     "Waiting for players...";
 
 
-   listenForPlayers();
-
-    listenForGameStart();
-
-
     if(isHost){
 
         startGameBtn.classList.remove(
@@ -371,22 +396,32 @@ function openLobby(){
 
     }
 
+
+    listenForPlayers();
+
+    listenForGameStart();
+
 }
 
+
+
 // ==========================
-// Player List
+// Player List Sync
 // ==========================
 
 function listenForPlayers(){
 
-    listenForGameStart();
-
     const playersRef =
     collection(
+
         db,
+
         "rooms",
+
         currentRoom,
+
         "players"
+
     );
 
 
@@ -396,17 +431,18 @@ function listenForPlayers(){
 
         (snapshot)=>{
 
-            const list =
-            document.getElementById(
-                "playerList"
-            );
 
-
-            list.innerHTML = "";
+            playerList.innerHTML = "";
 
 
             snapshot.forEach(
+
                 (player)=>{
+
+
+                    const data =
+                    player.data();
+
 
                     const li =
                     document.createElement(
@@ -415,19 +451,20 @@ function listenForPlayers(){
 
 
                     li.innerText =
-                    player.data().name;
+                    data.name;
 
 
-                    list.appendChild(li);
+                    playerList.appendChild(li);
+
 
                 }
+
             );
 
 
-            document.getElementById(
-                "playerCount"
-            ).innerText =
+            playerCount.innerText =
             `${snapshot.size} Players`;
+
 
         }
 
@@ -436,48 +473,253 @@ function listenForPlayers(){
 }
 
 
+
+// ==========================
+// Game Start Sync
+// ==========================
+
+function listenForGameStart(){
+
+    const roomRef =
+    doc(
+
+        db,
+
+        "rooms",
+
+        currentRoom
+
+    );
+
+
+    onSnapshot(
+
+        roomRef,
+
+        (snapshot)=>{
+
+
+            const data =
+            snapshot.data();
+
+
+            if(
+                data &&
+                data.gameStarted
+            ){
+
+                lobbyScreen.classList.add(
+                    "hidden"
+                );
+
+
+                gameScreen.classList.remove(
+                    "hidden"
+                );
+
+
+            }
+
+
+        }
+
+    );
+
+}
+
+
+
+// ==========================
+// Start Game
+// ==========================
+
+async function startGame(){
+
+    if(!isHost){
+
+        alert(
+            "Only the host can start the game."
+        );
+
+        return;
+
+    }
+
+
+
+ try{
+
+    await setDoc(
+
+        doc(
+
+            db,
+
+            "rooms",
+
+            currentRoom
+
+        ),
+
+        {
+
+            gameStarted:true
+
+        },
+
+        {
+
+            merge:true
+
+        }
+
+    );
+
+}
+
+catch(error){
+
+    console.error(
+        "Starting game failed:",
+        error
+    );
+
+}
+
+}
+
+// ==========================
+// Game Placeholder
+// ==========================
+
+const revealRoleBtn =
+document.getElementById("revealRoleBtn");
+
+
+const roleCard =
+document.getElementById("roleCard");
+
+
+const roleTitle =
+document.getElementById("roleTitle");
+
+
+const roleDescription =
+document.getElementById("roleDescription");
+
+
+const playAgainBtn =
+document.getElementById("playAgainBtn");
+
+
+
+if(revealRoleBtn){
+
+    revealRoleBtn.addEventListener(
+
+        "click",
+
+        ()=>{
+
+
+            roleCard.classList.remove(
+                "hidden"
+            );
+
+
+            roleTitle.innerText =
+            "Role Assigned";
+
+
+            roleDescription.innerText =
+            "Role assignment will be added next.";
+
+
+        }
+
+    );
+
+}
+
+
+
 // ==========================
 // Buttons
 // ==========================
 
 createLobbyBtn.addEventListener(
+
     "click",
+
     createLobby
+
 );
+
 
 
 joinLobbyBtn.addEventListener(
+
     "click",
+
     joinLobby
+
 );
 
 
+
 copyCodeBtn.addEventListener(
+
     "click",
+
     ()=>{
+
 
         navigator.clipboard.writeText(
             currentRoom
         );
 
+
         alert(
             "Lobby code copied!"
         );
 
+
     }
+
 );
 
+
+
 startGameBtn.addEventListener(
+
     "click",
+
     startGame
+
 );
+
 
 
 leaveLobbyBtn.addEventListener(
+
     "click",
+
     ()=>{
+
 
         location.reload();
 
+
     }
+
+);
+
+
+
+// ==========================
+// Finished Loading
+// ==========================
+
+console.log(
+    "OUTLIER READY"
 );
