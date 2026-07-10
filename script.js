@@ -145,7 +145,10 @@ async function createLobby(){
 
     playerName =
     nameInput.value.trim();
-    
+
+
+    if(!playerName){
+
         alert(
             "Enter your name."
         );
@@ -162,42 +165,54 @@ async function createLobby(){
     isHost = true;
 
 
-    await setDoc(
+    try{
 
-        doc(
-            db,
-            "rooms",
-            currentRoom
-        ),
+        await setDoc(
 
-        {
+            doc(
+                db,
+                "rooms",
+                currentRoom
+            ),
 
-            host: currentUser.uid,
+            {
 
-            gameStarted:false
+                host: currentUser.uid,
 
-        }
+                gameStarted:false
 
-    );
+            }
+
+        );
 
 
-       await addPlayerToLobby();
+        await addPlayerToLobby();
 
 
-    openLobby();
+        openLobby();
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Creating lobby failed:",
+            error
+        );
+
+    }
 
 }
 
 
+
 async function joinLobby(){
 
-    if(!currentUser){
+    while(!authReady){
 
-        alert(
-            "Connecting to server. Try again."
+        await new Promise(
+            resolve => setTimeout(resolve,100)
         );
-
-        return;
 
     }
 
