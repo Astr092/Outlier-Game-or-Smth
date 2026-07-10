@@ -752,7 +752,7 @@ if(revealRoleBtn){
 
 
                 roleDescription.innerText =
-                "Find the outlier among the group (innocent).";
+                "Find the outlier among the group (you are innocent).";
 
             }
 
