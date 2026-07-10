@@ -444,6 +444,11 @@ copyCodeBtn.addEventListener(
     }
 );
 
+startGameBtn.addEventListener(
+    "click",
+    startGame
+);
+
 
 leaveLobbyBtn.addEventListener(
     "click",
