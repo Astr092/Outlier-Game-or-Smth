@@ -85,6 +85,8 @@ async function addPlayerToLobby(){
 
 }
 
+console.log("addPlayerToLobby loaded");
+
 // ==========================
 // HTML Elements
 // ==========================
