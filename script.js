@@ -54,12 +54,18 @@ document.getElementById("statusText");
 
 
 // ==========================
-// Authentication
+// Authentication Debug
 // ==========================
 
 onAuthStateChanged(
     auth,
     (user)=>{
+
+        console.log(
+            "Auth state changed:",
+            user
+        );
+
 
         if(user){
 
@@ -68,8 +74,16 @@ onAuthStateChanged(
             authReady = true;
 
             console.log(
-                "Player ID:",
+                "Authentication successful:",
                 user.uid
+            );
+
+        }
+
+        else{
+
+            console.log(
+                "No user signed in yet"
             );
 
         }
@@ -80,15 +94,29 @@ onAuthStateChanged(
 
 async function loginPlayer(){
 
+    console.log(
+        "Attempting anonymous login..."
+    );
+
+
     try{
 
+        const result =
         await signInAnonymously(auth);
 
+
+        console.log(
+            "Login complete:",
+            result.user.uid
+        );
+
     }
+
 
     catch(error){
 
         console.error(
+            "LOGIN ERROR:",
             error
         );
 
@@ -98,60 +126,6 @@ async function loginPlayer(){
 
 
 loginPlayer();
-
-
-// ==========================
-// Utility Functions
-// ==========================
-
-function generateRoomCode(){
-
-    const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-    let code = "";
-
-    for(let i = 0; i < 5; i++){
-
-        code += characters[
-            Math.floor(
-                Math.random() *
-                characters.length
-            )
-        ];
-
-    }
-
-    return code;
-
-}
-
-
-// ==========================
-// Player Functions
-// ==========================
-
-async function addPlayerToLobby(){
-
-    await setDoc(
-
-        doc(
-            db,
-            "rooms",
-            currentRoom,
-            "players",
-            currentUser.uid
-        ),
-
-        {
-
-            name: playerName
-
-        }
-
-    );
-
-}
 
 
 // ==========================
