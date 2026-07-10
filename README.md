@@ -1,0 +1,1 @@
+This was made as a way for a group of people to play games, which otherwise, they would have never been able to do. I sincerely hope you enjoy being able to quickly and easily choose someone to be the outlier out of a group of 3+ people.
