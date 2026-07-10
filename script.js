@@ -30,6 +30,7 @@ let currentRoom = null;
 let playerName = null;
 let isHost = false;
 let authReady = false;
+let gameStarted = false;
 
 // ==========================
 // Utility Functions
