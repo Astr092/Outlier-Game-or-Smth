@@ -132,21 +132,20 @@ loginPlayer();
 // Lobby Functions
 // ==========================
 
-while(!authReady){
+async function createLobby(){
 
-    await new Promise(
-        resolve => setTimeout(resolve,100)
-    );
+    while(!authReady){
 
-}
+        await new Promise(
+            resolve => setTimeout(resolve,100)
+        );
+
+    }
 
 
     playerName =
     nameInput.value.trim();
-
-
-    if(!playerName){
-
+    
         alert(
             "Enter your name."
         );
