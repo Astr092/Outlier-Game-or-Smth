@@ -1,9 +1,29 @@
-console.log("NEW SCRIPT VERSION LOADED");
+// ==========================
+// Firebase Imports
+// ==========================
 
 import { db, auth } from "./firebase.js";
 
+import {
+    signInAnonymously,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
+
+import {
+    doc,
+    setDoc,
+    getDoc,
+    collection,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+
+console.log("NEW SCRIPT VERSION LOADED");
+
+// ==========================
 // Global Variables
+// ==========================
 
 let currentUser = null;
 let currentRoom = null;
@@ -11,8 +31,9 @@ let playerName = null;
 let isHost = false;
 let authReady = false;
 
-
+// ==========================
 // Utility Functions
+// ==========================
 
 function generateRoomCode(){
 
